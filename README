@@ -1,0 +1,104 @@
+Bucur Ionut-Cristian,323CA
+
+Workflow
+In clasa Test in medotda Main,instantiem doua obiecte de tip IOHandler si Bash.
+IOHandler ce va fi dat lui Bash,va prelua inputul din fisiere
+Bash retine intr-un container intern toate comenzile (obiecte returnate de Factory 
+in functie de ce primeste de Bash de la IOHandler),dupa acesta,executa toate 
+comenzile din container
+In functie de flowul acestora se pot afisa erori,acest lucru este facilitat cu 
+ajutorul clasei finale ErrorHandler,ce primeste de la comenzile executate sau
+din API coduri de eroare si comenzile(ls,cd..) corespunzatoare acestora
+API este reprezentat de clasele FileSystem respectiv UserSystem agregata acesteia
+Acest API faciliteaza diverse metode ce sunt folosite de comenzi.
+
+Patternuri folosite
+	-Factory Pattern a fost folosit in implementarea gestionarii crearii tipului
+	de comanda dorita
+	-Composite Pattern a fost folosit pentru creeare structurii arborescente de
+	fisiere din cadrul clasei FileSystem
+	
+Clase implementate:
+	#Test
+		-contine initializarea unui obiect de tip Bash si a unuia de tip IOHandler
+		-executa metoda executeAll din Bash ce ruleaza toate comenzile din 
+		containerul lui Bash
+	#Bash
+		-mostenteste clasa abstracta AbstractBash
+		-retine intr-un container intern toate comenzile (obiecte returnate de Factory 
+		in functie de ce primeste de Bash de la IOHandler)
+		-executa toate comenzile din container
+		
+	#Factory
+		-implementeaza IFactory
+		-contine o metoda ce creaza(returneaza un obiect nou) in functie de tipul
+		de comanda dorita,primind printre argumentele necesare acestora,sistemul 
+		de fisiere folosit si argumentul comenzii(de ex pt rm -r asd,primeste -r asd)
+		
+	#ErrorHandler
+		-clasa finala pentru a putea fi apelata fara mari batai de cap de oriunde
+		-are o metoda reportError ce primeste un cod de eroare si o comanda si 
+		returneaza mesajul corespunzator acesteia
+		
+	#UserSystem
+		-retine intern intr-un obiect de tip User userul curent(activ) in sistem
+		-retine intern o lista cu toti userii din sistem
+		-adauga automat la instantiere utilizatorul root
+		-contine metode pentru: @scoatere/setarea userului curent
+					@verificarea daca un user exista si returnarea acestuia
+					@gasirea unu inlocuitor(primul) viabil(din lista)
+								
+	#User
+		-contine numele si home directory-ul unui user
+		
+	#FileSystem
+		-contine clasele interne+iterfele ce au fost encapsulate astfel deoarece
+		 in viziunea mea tin numai de acest domeniu(sistem de fisiere)(IFile,Permission,
+		 FileEntity,File,Directory)
+		 
+	#Permission
+		-contine statusul permisiunilor rwx sub forma unor boolene
+		-contine get/set-eri pentru aceste statusuri individuale dar si pentru 
+		toate deodata
+		
+	#FileEntity
+		-implementeaza IFile
+		-contine metode comune atat directoarele cat si fisierelor(acestea pot fi
+		suprascrise de catre acestea)	
+		
+	#File
+		-mosteneste FileEntity
+		-retine contentul acestuia intern
+		-are metode de set/get dar si printare atat identata cat si normala
+		
+	#Directory
+		-mosteneste FileEntity
+		-retine intr-un containter de tip ArrayList<IFile> copiii(subdirectoarele +
+		fisierele ce se afla in acesta)
+		-are metode de set/get dar si printare atat identata cat si normala
+		-are metoda de gasit un fisier in directorul curent
+		-are metoda in cazul in care ownerul acestuia dispare
+		-are metoda de cautat daca un fisier dat ca argument se afla  in pathul acestuia
+		-are metoda de adaugat/scos fisiere din acesta
+		
+	#FileSystem
+		-retine intern un "tree" de fisiere(bazandu-se pe Composite Pattern), directorul
+		curent si sistemul de useri folosit
+		-are metoda de print
+		-are metode de set/get pentru directorul curent
+		-are metoda de adaugat un home directory pentru utilizatorii noi
+		-are metoda de sters urma(schimbat ownerul fisierlor detinute de acesta
+		 unui utilizator(eventual sters/de sters)
+		-are metoda de verificat permisiunile de acces ale unui utilizator intr-un 
+		director
+	
+	#Comenzile(AddUser, DelUser,ChUser,Cd,Mkdir,Ls,Chmod,Touch,Rm(contine si rm -r),
+	RmDir,Writetofile,Cat)
+		-implementeaza ICommand
+		-au o metoda execute ce implementeaza instructiunile descrie in cerinta temei
+		-au o metoda check ce verifica cazul de eroare corespunzatoare comenzii
+		
+	
+		
+		
+
